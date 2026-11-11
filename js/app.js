@@ -110,7 +110,7 @@
             ? `<br><a href="${detailUrl}" target="_blank" rel="noopener">詳細図を見る</a>`
             : "";
           infoWindow.setContent(
-            `<strong>${name}</strong><br>${address}${photo}${detailLink}`
+            `<strong>${name}</strong> ${address}${photo}${detailLink}`
           );
           infoWindow.open(map, marker);
         });
