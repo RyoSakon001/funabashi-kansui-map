@@ -87,7 +87,6 @@ main {
   background: #e9eef1;
 }
 
-.map-frame iframe,
 .map-frame #map {
   position: absolute;
   inset: 0;

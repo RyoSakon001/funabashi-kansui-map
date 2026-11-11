@@ -60,7 +60,6 @@ for (const record of records) {
     ...record,
     lat: hit ? hit.lat : "",
     lng: hit ? hit.lon : "",
-    matched: hit ? hit.display_name : "",
   });
 
   console.error(
