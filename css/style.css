@@ -108,12 +108,8 @@ main {
   margin-top: 0.25rem;
 }
 
-.route-form input,
-.route-form select {
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  font-size: 1rem;
+gmp-place-autocomplete {
+  width: 100%;
 }
 
 .route-form button {
@@ -154,23 +150,17 @@ main {
     margin-bottom: -0.25rem;
   }
 
-  .route-form input#origin,
+  #origin,
   .route-form label[for="origin"] {
     grid-column: 1;
   }
 
-  .route-form input#destination,
+  #destination,
   .route-form label[for="destination"] {
     grid-column: 2;
   }
 
-  .route-form select,
-  .route-form label[for="mode"] {
-    grid-column: 1;
-  }
-
   .route-form button {
-    grid-column: 2;
-    margin-top: 0;
+    grid-column: span 2;
   }
 }

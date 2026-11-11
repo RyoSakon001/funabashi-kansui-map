@@ -17,8 +17,9 @@
 1つの地図上に冠水ポイントとルートを両方表示するため、**Google Maps JavaScript API** でコード側に地図を描画している。
 
 - **冠水ポイントの表示**: `data/flood-points.csv`(緯度経度込み)を `fetch` して `google.maps.Marker` を描画するだけ。Google側のAPIは使わないため課金は発生しない。ピンをクリックすると住所と詳細図PDFへのリンクを表示する。
-- **ルート検索**: [Routes API](https://developers.google.com/maps/documentation/routes) の `computeRoutes` をREST(`fetch`)で呼び、返ってきたエンコード済みポリラインを `google.maps.Polyline` で描画する(Directions APIではなくRoutes APIを使用。新規プロジェクトではDirections APIを有効化できないため)。
-- **Maps JavaScript API** と **Routes API** は呼び出し回数に応じて課金されるAPI(月間無料枠あり)。**完全無料ではない**ため、以下の安全策を必ず設定する:
+- **ルート検索**: [Routes API](https://developers.google.com/maps/documentation/routes) の `computeRoutes` をREST(`fetch`)で呼び、返ってきたエンコード済みポリラインを `google.maps.Polyline` で描画する。移動手段は車(DRIVE)固定。
+- **出発地・目的地の候補表示**: `<gmp-place-autocomplete>`([Places API (New)](https://developers.google.com/maps/documentation/javascript/place-autocomplete-new) のウィジェット)で、入力中に候補を表示する。船橋市周辺(半径20km)を優先的に候補表示するようバイアスをかけている。
+- **Maps JavaScript API**、**Routes API**、**Places API (New)** は呼び出し回数に応じて課金されるAPI(月間無料枠あり)。**完全無料ではない**ため、以下の安全策を必ず設定する:
   1. GCPの「APIとサービス」→「有効なAPIとサービス」→対象API→「クオータ」で、**1日あたりのリクエスト数に上限**を設定し、無料枠を絶対に超えないようにする。
   2. 「お支払い」→「予算とアラート」で低額の予算アラート(メール通知)も設定しておく。
   3. 想定外に料金が発生しそうな場合は `status.json` の `available` を `false` にしてpushすれば、サイト上に注意バナーが表示される(下記参照)。
@@ -42,15 +43,15 @@
 1. [Google Cloud Console](https://console.cloud.google.com/) で新規プロジェクトを作成。
 2. 「お支払い」からBilling account(クレジットカード)を設定。
 3. 低額の予算アラートを設定しておく(例: ¥100を超えたらメール通知)。「お支払い」→「予算とアラート」。
-4. 「APIとサービス」→「ライブラリ」から **Maps JavaScript API** と **Routes API** を有効化。
+4. 「APIとサービス」→「ライブラリ」から **Maps JavaScript API**、**Routes API**、**Places API (New)** を有効化。
 5. 「認証情報」→「認証情報を作成」→「APIキー」でキーを発行。
 6. 発行したキーを選択し、「アプリケーションの制限」を **HTTPリファラー** に設定し、以下を許可リストに追加:
    ```
    https://<あなたのGitHubユーザー名>.github.io/*
    ```
    (ローカルで動作確認する場合は `http://localhost:*` も追加)
-7. 「APIの制限」で **Maps JavaScript API と Routes API のみ** を許可するように設定(他のAPIが誤って使われるのを防ぐ)。
-8. 「APIとサービス」→「有効なAPIとサービス」から Maps JavaScript API / Routes API それぞれを開き、「クオータ」タブで1日あたりのリクエスト数上限を無料枠内(少な目)に設定する。これが課金を防ぐ実質的なハードリミットになる。
+7. 「APIの制限」で **Maps JavaScript API、Routes API、Places API (New) のみ** を許可するように設定(他のAPIが誤って使われるのを防ぐ)。
+8. 「APIとサービス」→「有効なAPIとサービス」から上記3つのAPIそれぞれを開き、「クオータ」タブで1日あたりのリクエスト数上限を無料枠内(少な目)に設定する。これが課金を防ぐ実質的なハードリミットになる。
 
 ### 3. GitHub repository の設定
 

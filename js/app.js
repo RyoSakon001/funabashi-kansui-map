@@ -1,13 +1,6 @@
 (function () {
   const FUNABASHI_CENTER = { lat: 35.72800753725795, lng: 140.00721115 };
 
-  const TRAVEL_MODE_MAP = {
-    driving: "DRIVE",
-    walking: "WALK",
-    bicycling: "BICYCLE",
-    transit: "TRANSIT",
-  };
-
   const ROUTE_FIELD_MASK =
     "routes.polyline.encodedPolyline,routes.legs.startLocation,routes.legs.endLocation";
 
@@ -41,7 +34,14 @@
     });
 
     loadFloodPoints();
+    setupAutocomplete(document.getElementById("origin"));
+    setupAutocomplete(document.getElementById("destination"));
   };
+
+  function setupAutocomplete(el) {
+    el.includedRegionCodes = ["jp"];
+    el.locationBias = { radius: 20000, center: FUNABASHI_CENTER };
+  }
 
   function parseFloodPointsCsv(text) {
     const lines = text.replace(/^﻿/, "").trim().split(/\r?\n/);
@@ -119,7 +119,7 @@
     }
 
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&callback=initMap&language=ja&region=JP&libraries=geometry`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&callback=initMap&language=ja&region=JP&libraries=geometry,places`;
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
@@ -127,7 +127,7 @@
 
   loadGoogleMapsScript();
 
-  async function computeRoute(origin, destination, travelMode) {
+  async function computeRoute(origin, destination) {
     const res = await fetch(
       "https://routes.googleapis.com/directions/v2:computeRoutes",
       {
@@ -140,7 +140,7 @@
         body: JSON.stringify({
           origin: { address: origin },
           destination: { address: destination },
-          travelMode,
+          travelMode: "DRIVE",
         }),
       }
     );
@@ -215,15 +215,13 @@
 
     const origin = document.getElementById("origin").value.trim();
     const destination = document.getElementById("destination").value.trim();
-    const travelMode =
-      TRAVEL_MODE_MAP[document.getElementById("mode").value] || "DRIVE";
 
     if (!origin || !destination) {
       return;
     }
 
     try {
-      const route = await computeRoute(origin, destination, travelMode);
+      const route = await computeRoute(origin, destination);
       renderRoute(route);
     } catch (err) {
       routeError.textContent = `ルートを取得できませんでした(${err.message})。地点名を見直してください。`;
