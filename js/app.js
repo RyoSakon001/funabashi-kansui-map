@@ -27,6 +27,17 @@
 
   const routeForm = document.getElementById("route-form");
   const routeError = document.getElementById("route-error");
+  const mapError = document.getElementById("map-error");
+
+  const KML_STATUS_MESSAGES = {
+    INVALID_DOCUMENT: "マイマップのKMLデータを解析できませんでした。",
+    FETCH_ERROR: "マイマップのデータを取得できませんでした(公開設定を確認してください)。",
+    INVALID_REQUEST: "マイマップの読み込みリクエストが不正です。",
+    TIMED_OUT: "マイマップの読み込みがタイムアウトしました。",
+    DOCUMENT_TOO_LARGE: "マイマップのデータが大きすぎて表示できません。",
+    LIMITS_EXCEEDED: "マイマップの表示件数の上限を超えています。",
+    UNKNOWN: "マイマップの読み込みで不明なエラーが発生しました。",
+  };
 
   let map;
   let routePolyline = null;
@@ -39,10 +50,23 @@
       zoom: 13,
     });
 
-    new google.maps.KmlLayer({
+    const kmlLayer = new google.maps.KmlLayer({
       url: `https://www.google.com/maps/d/kml?mid=${SITE_CONFIG.MYMAPS_MID}&forcekml=1`,
       map,
       preserveViewport: false,
+    });
+
+    kmlLayer.addListener("status_changed", () => {
+      const status = kmlLayer.getStatus();
+      if (status !== "OK") {
+        console.error("KmlLayer status:", status);
+        mapError.textContent =
+          KML_STATUS_MESSAGES[status] ||
+          `冠水ポイントの読み込みに失敗しました(${status})。`;
+        mapError.hidden = false;
+      } else {
+        mapError.hidden = true;
+      }
     });
   };
 
