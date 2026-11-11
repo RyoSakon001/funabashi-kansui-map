@@ -105,7 +105,7 @@
         throw new Error("冠水ポイントの座標が読み取れませんでした");
       }
 
-      map.fitBounds(bounds, 16);
+      map.fitBounds(bounds, 4);
       mapError.hidden = true;
     } catch (err) {
       console.error("冠水ポイントの読み込みエラー:", err);

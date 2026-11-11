@@ -1,16 +1,4 @@
 :root {
-  --color-bg: #ffffff;
-  --color-surface: #ffffff;
-  --color-text: #1c2b33;
-  --color-muted: #5b6b73;
-  --color-primary: #3aa0c4;
-  --color-primary-dark: #277a99;
-  --color-accent: #f2c94c;
-  --color-accent-dark: #d9ac2c;
-  --color-accent-text: #3b2f12;
-  --color-border: #d9ebf1;
-  --color-warning-bg: #fff3cd;
-  --color-warning-text: #7a5b00;
   --radius: 10px;
 }
 

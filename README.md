@@ -5,6 +5,8 @@
 ## 構成
 
 - `index.html` / `css/style.css` / `js/app.js` — サイト本体(素のHTML/CSS/JS、フレームワーク無し)
+- `css/brand.css` — ブランドカラー(CSS変数)。配色を変えるときはここだけ編集すればよい
+- `favicon.svg` — Material Symbolsの`water_drop`アイコンをブランドカラーで着色したfavicon
 - `js/config.js` — 実際のAPIキーが入るファイル(**gitignore対象、コミットしない**。`.env` または GitHub Actionsから生成)
 - `scripts/gen-config.sh` — `.env` から `js/config.js` を生成するスクリプト(ローカル開発用)
 - `data/flood-points.csv` — 冠水ポイントのデータ(番号・住所・詳細図PDFリンク・緯度・経度)。**唯一の正データ**で、ブラウザが直接読み込む
