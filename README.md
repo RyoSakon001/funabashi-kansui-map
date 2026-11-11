@@ -1,13 +1,14 @@
 # 船橋冠水マップ
 
-船橋市内の冠水しやすいエリア(Googleマイマップ)と、2点間のルート検索を1つの地図上に表示するシンプルな静的サイトです。GitHub Pagesでホストし、独自ドメインは使用しません。
+船橋市内の冠水しやすいエリアと、2点間のルート検索を1つの地図上に表示するシンプルな静的サイトです。GitHub Pagesでホストし、独自ドメインは使用しません。
 
 ## 構成
 
-- `index.html` / `css/style.css` / `js/app.js` — サイト本体(素のHTML/CSS/JS、フレームワーク無し) 
-- `js/site-config.js` — マイマップのID(非シークレット、コミット対象)
+- `index.html` / `css/style.css` / `js/app.js` — サイト本体(素のHTML/CSS/JS、フレームワーク無し)
 - `js/config.js` — 実際のAPIキーが入るファイル(**gitignore対象、コミットしない**。`.env` または GitHub Actionsから生成)
 - `scripts/gen-config.sh` — `.env` から `js/config.js` を生成するスクリプト(ローカル開発用)
+- `data/flood-points.csv` — 冠水ポイントのデータ(番号・住所・詳細図PDFリンク・緯度・経度)。**これが唯一の正データ**で、ブラウザが直接読み込む
+- `scripts/geocode-addresses.mjs` — 新しい住所を追加したときに手動で実行する、住所→座標変換スクリプト(APIキー不要、OpenStreetMapのNominatimを使用)
 - `status.json` — サイトの稼働状態フラグ。何か問題が起きたときに手動で書き換えて注意バナーを出す
 - `.github/workflows/deploy.yml` — pushするとGitHub Pagesへ自動デプロイ(本番はリポジトリのSecretから`js/config.js`を生成)
 
@@ -15,8 +16,13 @@
 
 1つの地図上に冠水ポイントとルートを両方表示するため、iframe埋め込みではなく **Google Maps JavaScript API** を使ってコード側で地図を描画しています。
 
-- **冠水ポイントの表示**: マイマップのKMLエクスポート(`https://www.google.com/maps/d/kml?mid=...`)を `fetch` で取得し、`DOMParser` でPlacemarkを抽出して `google.maps.Marker` を描画。マイマップ側でピンを編集すればサイトにも反映されます。
-  - `google.maps.KmlLayer` はGoogleにより2026年8月(Maps JavaScript API v3.66)で廃止されたため使用していません([Deprecations](https://developers.google.com/maps/deprecations)参照)。
+- **冠水ポイントの表示**: `data/flood-points.csv`(緯度経度込み)を `fetch` で読み込んで `google.maps.Marker` を描画するだけ。**Google側のAPIは一切使わない**ので課金の心配がありません。
+  - 座標は`scripts/geocode-addresses.mjs`でOpenStreetMapのNominatimを使い**事前に1回**解決済み(無料・APIキー不要)。精度は丁目レベル(誤差200m程度)。ピンをクリックすると住所と詳細図PDFへのリンクが表示されるので、正確な場所はそちらで確認する想定。
+  - 検討の末にこの方式に落ち着いた経緯:
+    1. 当初Googleマイマップの埋め込みを使おうとしたが、`google.maps.KmlLayer`がGoogleにより2026年8月(Maps JavaScript API v3.66)で廃止された。
+    2. KMLエクスポートの非公式エンドポイント(`maps/d/kml`)はブラウザからのクロスオリジンfetchをブロックする。
+    3. そもそもエクスポートされるKMLには緯度経度が含まれておらず住所のみだった。
+    4. Google Geocoding APIでビルド時に変換する案も検討したが、位置が固定でほぼ変わらないデータに対して継続的に課金APIを使う必要はないため、無料のNominatimで**事前に1回**変換する方式に変更した。
 - **ルート検索**: [Routes API](https://developers.google.com/maps/documentation/routes) の `computeRoutes` をREST(`fetch`)で直接呼び、返ってきたエンコード済みポリラインを `google.maps.Polyline` で描画。
   - 2026年10月5日以降、レガシーの **Directions API** は新規のGoogle Cloudプロジェクトでは有効化できなくなったため、Googleが新規開発に案内している **Routes API** を採用しています。
 - これらは **Maps JavaScript API** と **Routes API** という、呼び出し回数に応じて課金されるAPIです(月間無料枠あり)。**完全無料ではない**ため、以下の安全策を必ず設定してください:
@@ -26,16 +32,23 @@
 
 ## セットアップ手順
 
-### 1. Googleマイマップ
+### 1. 冠水ポイントのデータを更新する
 
-すでに作成済みのマイマップの共有URLからmidを取得し、`js/site-config.js` の `MYMAPS_MID` に設定済みです。ピン(冠水ポイント)を追加・編集したい場合は、マイマップ側を編集するだけでサイトにも反映されます。
+`data/flood-points.csv` を直接編集する(`番号,住所,詳細図,lat,lng` の5列)。
+
+- 既存ポイントの住所や詳細図リンクだけ直す場合は、そのままCSVを編集してpushすればよい。
+- **新しいポイントを追加する場合**は、`番号,住所,詳細図` を追記したあと以下を実行して `lat,lng` を埋める:
+  ```sh
+  node scripts/geocode-addresses.mjs > /tmp/flood-points-new.csv
+  # 内容を確認してから data/flood-points.csv を上書き
+  ```
+  (Nominatimの利用規約上、1件あたり約1秒かかる)
 
 ### 2. Google Cloud Platform でAPIキーを作成する
 
 1. [Google Cloud Console](https://console.cloud.google.com/) で新規プロジェクトを作成。
 2. 「お支払い」からBilling account(クレジットカード)を設定。
 3. 低額の予算アラートを設定しておく(例: ¥100を超えたらメール通知)。「お支払い」→「予算とアラート」。
-   - Embed APIは無料ですが、誤って別のAPI(JavaScript API等)を有効化してしまった場合の保険として設定しておくことを推奨します。
 4. 「APIとサービス」→「ライブラリ」から **Maps JavaScript API** と **Routes API** を有効化(Directions APIは2026年10月5日以降新規プロジェクトでは有効化できないため使用しません)。
 5. 「認証情報」→「認証情報を作成」→「APIキー」でキーを発行。
 6. 発行したキーを選択し、「アプリケーションの制限」を **HTTPリファラー** に設定し、以下を許可リストに追加:

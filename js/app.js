@@ -43,42 +43,62 @@
     loadFloodPoints();
   };
 
+  function parseFloodPointsCsv(text) {
+    const lines = text.replace(/^﻿/, "").trim().split(/\r?\n/);
+    const headers = lines[0].split(",");
+    return lines.slice(1).map((line) => {
+      const values = line.split(",");
+      const row = {};
+      headers.forEach((key, i) => {
+        row[key] = values[i];
+      });
+      return row;
+    });
+  }
+
   async function loadFloodPoints() {
     try {
-      const res = await fetch(
-        `https://www.google.com/maps/d/kml?mid=${SITE_CONFIG.MYMAPS_MID}&forcekml=1`
-      );
+      const res = await fetch("./data/flood-points.csv", { cache: "no-store" });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`);
       }
 
-      const kmlText = await res.text();
-      const xml = new DOMParser().parseFromString(kmlText, "text/xml");
-      const placemarks = Array.from(xml.getElementsByTagName("Placemark"));
+      const rows = parseFloodPointsCsv(await res.text());
+      if (rows.length === 0) {
+        throw new Error("冠水ポイントが見つかりませんでした");
+      }
 
+      const infoWindow = new google.maps.InfoWindow();
       const bounds = new google.maps.LatLngBounds();
 
-      placemarks.forEach((placemark) => {
-        const point = placemark.getElementsByTagName("Point")[0];
-        const coordsText = point?.getElementsByTagName("coordinates")[0]?.textContent;
-        if (!coordsText) {
-          return;
-        }
-
-        const [lng, lat] = coordsText.trim().split(",").map(Number);
+      rows.forEach((row) => {
+        const lat = Number(row.lat);
+        const lng = Number(row.lng);
         if (Number.isNaN(lat) || Number.isNaN(lng)) {
           return;
         }
 
+        const name = `No.${row["番号"]}`;
+        const address = row["住所"];
+        const detailUrl = row["詳細図"];
         const position = { lat, lng };
-        const name = placemark.getElementsByTagName("name")[0]?.textContent || "";
+        const marker = new google.maps.Marker({ position, map, title: address });
 
-        new google.maps.Marker({ position, map, title: name });
+        marker.addListener("click", () => {
+          const detailLink = detailUrl
+            ? `<br><a href="${detailUrl}" target="_blank" rel="noopener">詳細図を見る</a>`
+            : "";
+          infoWindow.setContent(
+            `<strong>${name}</strong><br>${address}${detailLink}`
+          );
+          infoWindow.open(map, marker);
+        });
+
         bounds.extend(position);
       });
 
       if (bounds.isEmpty()) {
-        throw new Error("冠水ポイントが見つかりませんでした");
+        throw new Error("冠水ポイントの座標が読み取れませんでした");
       }
 
       map.fitBounds(bounds);
