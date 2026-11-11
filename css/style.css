@@ -1,0 +1,179 @@
+:root {
+  --color-bg: #f5f8fa;
+  --color-surface: #ffffff;
+  --color-text: #1c2b33;
+  --color-muted: #5b6b73;
+  --color-primary: #0b6fab;
+  --color-primary-dark: #08557f;
+  --color-border: #d8e2e7;
+  --color-warning-bg: #fff3cd;
+  --color-warning-text: #7a5b00;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic", system-ui, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.site-header {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: #fff;
+  padding: 2rem 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.site-header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.6rem;
+}
+
+.site-header .lead {
+  margin: 0;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.status-banner {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  text-align: center;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #f0d58c;
+}
+
+main {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.25rem 1.5rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.15rem;
+}
+
+.panel-desc {
+  margin: 0 0 1rem;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.map-frame {
+  position: relative;
+  width: 100%;
+  padding-top: 65%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #e9eef1;
+}
+
+.map-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.route-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.route-form label {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-top: 0.25rem;
+}
+
+.route-form input,
+.route-form select {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+}
+
+.route-form button {
+  margin-top: 0.75rem;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.route-form button:hover {
+  background: var(--color-primary-dark);
+}
+
+.route-map-frame {
+  margin-top: 1rem;
+}
+
+.route-error {
+  color: #b3261e;
+  font-size: 0.9rem;
+}
+
+.site-footer {
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  padding: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .route-form {
+    grid-template-columns: 1fr 1fr;
+    align-items: end;
+  }
+
+  .route-form label {
+    grid-column: span 2;
+    margin-bottom: -0.25rem;
+  }
+
+  .route-form input#origin,
+  .route-form label[for="origin"] {
+    grid-column: 1;
+  }
+
+  .route-form input#destination,
+  .route-form label[for="destination"] {
+    grid-column: 2;
+  }
+
+  .route-form select,
+  .route-form label[for="mode"] {
+    grid-column: 1;
+  }
+
+  .route-form button {
+    grid-column: 2;
+    margin-top: 0;
+  }
+}
