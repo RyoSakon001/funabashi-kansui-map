@@ -15,7 +15,8 @@
 
 1つの地図上に冠水ポイントとルートを両方表示するため、iframe埋め込みではなく **Google Maps JavaScript API** を使ってコード側で地図を描画しています。
 
-- **冠水ポイントの表示**: `google.maps.KmlLayer` でマイマップのKMLエクスポート(`https://www.google.com/maps/d/kml?mid=...`)を読み込んで表示。マイマップ側でピンを編集すればサイトにも反映されます。
+- **冠水ポイントの表示**: マイマップのKMLエクスポート(`https://www.google.com/maps/d/kml?mid=...`)を `fetch` で取得し、`DOMParser` でPlacemarkを抽出して `google.maps.Marker` を描画。マイマップ側でピンを編集すればサイトにも反映されます。
+  - `google.maps.KmlLayer` はGoogleにより2026年8月(Maps JavaScript API v3.66)で廃止されたため使用していません([Deprecations](https://developers.google.com/maps/deprecations)参照)。
 - **ルート検索**: [Routes API](https://developers.google.com/maps/documentation/routes) の `computeRoutes` をREST(`fetch`)で直接呼び、返ってきたエンコード済みポリラインを `google.maps.Polyline` で描画。
   - 2026年10月5日以降、レガシーの **Directions API** は新規のGoogle Cloudプロジェクトでは有効化できなくなったため、Googleが新規開発に案内している **Routes API** を採用しています。
 - これらは **Maps JavaScript API** と **Routes API** という、呼び出し回数に応じて課金されるAPIです(月間無料枠あり)。**完全無料ではない**ため、以下の安全策を必ず設定してください:

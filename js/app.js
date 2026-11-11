@@ -29,16 +29,6 @@
   const routeError = document.getElementById("route-error");
   const mapError = document.getElementById("map-error");
 
-  const KML_STATUS_MESSAGES = {
-    INVALID_DOCUMENT: "マイマップのKMLデータを解析できませんでした。",
-    FETCH_ERROR: "マイマップのデータを取得できませんでした(公開設定を確認してください)。",
-    INVALID_REQUEST: "マイマップの読み込みリクエストが不正です。",
-    TIMED_OUT: "マイマップの読み込みがタイムアウトしました。",
-    DOCUMENT_TOO_LARGE: "マイマップのデータが大きすぎて表示できません。",
-    LIMITS_EXCEEDED: "マイマップの表示件数の上限を超えています。",
-    UNKNOWN: "マイマップの読み込みで不明なエラーが発生しました。",
-  };
-
   let map;
   let routePolyline = null;
   let originMarker = null;
@@ -50,25 +40,55 @@
       zoom: 13,
     });
 
-    const kmlLayer = new google.maps.KmlLayer({
-      url: `https://www.google.com/maps/d/kml?mid=${SITE_CONFIG.MYMAPS_MID}&forcekml=1`,
-      map,
-      preserveViewport: false,
-    });
-
-    kmlLayer.addListener("status_changed", () => {
-      const status = kmlLayer.getStatus();
-      if (status !== "OK") {
-        console.error("KmlLayer status:", status);
-        mapError.textContent =
-          KML_STATUS_MESSAGES[status] ||
-          `冠水ポイントの読み込みに失敗しました(${status})。`;
-        mapError.hidden = false;
-      } else {
-        mapError.hidden = true;
-      }
-    });
+    loadFloodPoints();
   };
+
+  async function loadFloodPoints() {
+    try {
+      const res = await fetch(
+        `https://www.google.com/maps/d/kml?mid=${SITE_CONFIG.MYMAPS_MID}&forcekml=1`
+      );
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const kmlText = await res.text();
+      const xml = new DOMParser().parseFromString(kmlText, "text/xml");
+      const placemarks = Array.from(xml.getElementsByTagName("Placemark"));
+
+      const bounds = new google.maps.LatLngBounds();
+
+      placemarks.forEach((placemark) => {
+        const point = placemark.getElementsByTagName("Point")[0];
+        const coordsText = point?.getElementsByTagName("coordinates")[0]?.textContent;
+        if (!coordsText) {
+          return;
+        }
+
+        const [lng, lat] = coordsText.trim().split(",").map(Number);
+        if (Number.isNaN(lat) || Number.isNaN(lng)) {
+          return;
+        }
+
+        const position = { lat, lng };
+        const name = placemark.getElementsByTagName("name")[0]?.textContent || "";
+
+        new google.maps.Marker({ position, map, title: name });
+        bounds.extend(position);
+      });
+
+      if (bounds.isEmpty()) {
+        throw new Error("冠水ポイントが見つかりませんでした");
+      }
+
+      map.fitBounds(bounds);
+      mapError.hidden = true;
+    } catch (err) {
+      console.error("冠水ポイントの読み込みエラー:", err);
+      mapError.textContent = `冠水ポイントを読み込めませんでした(${err.message})。`;
+      mapError.hidden = false;
+    }
+  }
 
   function loadGoogleMapsScript() {
     if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === "YOUR_API_KEY_HERE") {
