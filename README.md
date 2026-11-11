@@ -4,7 +4,7 @@
 
 ## 構成
 
-- `index.html` / `css/style.css` / `js/app.js` — サイト本体(素のHTML/CSS/JS、フレームワーク無し)
+- `index.html` / `css/style.css` / `js/app.js` — サイト本体(素のHTML/CSS/JS、フレームワーク無し) 
 - `js/site-config.js` — マイマップのID(非シークレット、コミット対象)
 - `js/config.js` — 実際のAPIキーが入るファイル(**gitignore対象、コミットしない**。`.env` または GitHub Actionsから生成)
 - `.env.example` — ローカル開発用のAPIキー設定テンプレート(コミット対象)
