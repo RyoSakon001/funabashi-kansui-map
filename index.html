@@ -17,7 +17,19 @@
 </head>
 <body>
   <header class="site-header">
-    <h1><span class="material-symbols-outlined" aria-hidden="true">water_drop</span>船橋冠水マップ</h1>
+    <div class="header-inner">
+      <div class="brand">
+        <span class="material-symbols-outlined brand-mark" aria-hidden="true">water_drop</span>
+        <span class="brand-text">
+          船橋冠水マップ
+          <small class="brand-credit">作成: <a href="https://sakonryo.site/" target="_blank" rel="noopener">左近りょう</a></small>
+        </span>
+      </div>
+      <button type="button" id="about-open" class="about-link">
+        <span class="material-symbols-outlined" aria-hidden="true">info</span>
+        このサイトについて
+      </button>
+    </div>
     <p class="lead">大雨時に冠水しやすいエリアを確認し、安全なルートを検討するための地図です。</p>
   </header>
 
@@ -61,8 +73,40 @@
   </main>
 
   <footer class="site-footer">
-    <p>冠水ポイントデータ: 船橋市公表資料 / 地図: Google Maps JavaScript API</p>
+    <p>
+      冠水ポイントデータ:
+      <a href="https://www.city.funabashi.lg.jp/bousai/map/p151391.html" target="_blank" rel="noopener">船橋市公表資料</a>
+      / 地図: Google Maps JavaScript API
+    </p>
+    <p class="footer-credit">
+      作成: <a href="https://sakonryo.site/" target="_blank" rel="noopener">左近りょう</a>
+    </p>
   </footer>
+
+  <dialog id="about-dialog" class="about-dialog">
+    <div class="about-dialog-header">
+      <h2>このサイトについて</h2>
+      <button type="button" id="about-close" class="icon-button" aria-label="閉じる">
+        <span class="material-symbols-outlined" aria-hidden="true">close</span>
+      </button>
+    </div>
+    <div class="about-dialog-body">
+      <p>この度の千葉豪雨により被害に遭われた皆さまに、心よりお見舞い申し上げます。</p>
+      <p>
+        船橋市内でも大雨のたびに道路が冠水し、通行に支障が出る箇所が複数あります。
+        そうした状況を踏まえ、少しでも船橋市にお住まいの皆さまの安全な移動のお役に立ちたいという思いから、
+        本サイトを作成しました。
+      </p>
+      <p>
+        冠水ポイントのデータは
+        <a href="https://www.city.funabashi.lg.jp/bousai/map/p151391.html" target="_blank" rel="noopener">船橋市公式サイト</a>
+        の公表資料をもとにしています。
+      </p>
+      <p class="about-author">
+        作成者: 左近りょう(<a href="https://sakonryo.site/" target="_blank" rel="noopener">公式HP</a>)
+      </p>
+    </div>
+  </dialog>
 
   <script src="js/config.js"></script>
   <script src="js/app.js"></script>

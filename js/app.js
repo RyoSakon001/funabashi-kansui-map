@@ -22,6 +22,19 @@
   const routeError = document.getElementById("route-error");
   const mapError = document.getElementById("map-error");
 
+  const aboutDialog = document.getElementById("about-dialog");
+  document.getElementById("about-open").addEventListener("click", () => {
+    aboutDialog.showModal();
+  });
+  document.getElementById("about-close").addEventListener("click", () => {
+    aboutDialog.close();
+  });
+  aboutDialog.addEventListener("click", (event) => {
+    if (event.target === aboutDialog) {
+      aboutDialog.close();
+    }
+  });
+
   let map;
   let routePolyline = null;
   let originMarker = null;
