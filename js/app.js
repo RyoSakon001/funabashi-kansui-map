@@ -85,15 +85,19 @@
         const name = `No.${row["番号"]}`;
         const address = row["住所"];
         const detailUrl = row["詳細図"];
+        const photoUrl = row["写真"];
         const position = { lat, lng };
         const marker = new google.maps.Marker({ position, map, title: address });
 
         marker.addListener("click", () => {
+          const photo = photoUrl
+            ? `<br><img src="${photoUrl}" alt="${address}の現地写真" style="max-width:220px;border-radius:6px;margin-top:6px;">`
+            : "";
           const detailLink = detailUrl
             ? `<br><a href="${detailUrl}" target="_blank" rel="noopener">詳細図を見る</a>`
             : "";
           infoWindow.setContent(
-            `<strong>${name}</strong><br>${address}${detailLink}`
+            `<strong>${name}</strong><br>${address}${photo}${detailLink}`
           );
           infoWindow.open(map, marker);
         });

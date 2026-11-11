@@ -9,7 +9,8 @@
 - `favicon.svg` — Material Symbolsの`water_drop`アイコンをブランドカラーで着色したfavicon
 - `js/config.js` — 実際のAPIキーが入るファイル(**gitignore対象、コミットしない**。`.env` または GitHub Actionsから生成)
 - `scripts/gen-config.sh` — `.env` から `js/config.js` を生成するスクリプト(ローカル開発用)
-- `data/flood-points.csv` — 冠水ポイントのデータ(番号・住所・詳細図PDFリンク・緯度・経度)。**唯一の正データ**で、ブラウザが直接読み込む
+- `data/flood-points.csv` — 冠水ポイントのデータ(番号・住所・詳細図PDFリンク・緯度・経度・現地写真パス)。**唯一の正データ**で、ブラウザが直接読み込む
+- `images/` — 冠水ポイントの現地写真(ピンをクリックした際にポップアップ内に表示)。横幅800px程度にリサイズ・JPEG圧縮してから置く
 - `scripts/geocode-addresses.mjs` — 新しい住所を追加したときに手動で実行する、住所→座標変換スクリプト(APIキー不要、OpenStreetMapのNominatimを使用)
 - `status.json` — サイトの稼働状態フラグ。何か問題が起きたときに手動で書き換えて注意バナーを出す
 - `.github/workflows/deploy.yml` — pushするとGitHub Pagesへ自動デプロイ(本番はリポジトリのSecretから`js/config.js`を生成)
