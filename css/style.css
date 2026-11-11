@@ -81,12 +81,14 @@ main {
   position: relative;
   width: 100%;
   padding-top: 65%;
+  margin-top: 1rem;
   border-radius: var(--radius);
   overflow: hidden;
   background: #e9eef1;
 }
 
-.map-frame iframe {
+.map-frame iframe,
+.map-frame #map {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -128,10 +130,6 @@ main {
 
 .route-form button:hover {
   background: var(--color-primary-dark);
-}
-
-.route-map-frame {
-  margin-top: 1rem;
 }
 
 .route-error {

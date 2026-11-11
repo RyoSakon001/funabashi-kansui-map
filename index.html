@@ -16,23 +16,9 @@
   <div id="status-banner" class="status-banner" hidden></div>
 
   <main>
-    <section class="panel" aria-labelledby="flood-map-heading">
-      <h2 id="flood-map-heading">冠水エリアマップ</h2>
-      <p class="panel-desc">登録済みの冠水ポイントを表示しています(ピンの位置は固定です)。</p>
-      <div class="map-frame">
-        <iframe
-          id="mymaps-frame"
-          src=""
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          allowfullscreen
-        ></iframe>
-      </div>
-    </section>
-
-    <section class="panel" aria-labelledby="route-heading">
-      <h2 id="route-heading">ルート検索</h2>
-      <p class="panel-desc">出発地と目的地を入力すると、ルートを地図上に表示します。</p>
+    <section class="panel" aria-labelledby="map-heading">
+      <h2 id="map-heading">冠水エリア & ルート検索</h2>
+      <p class="panel-desc">登録済みの冠水ポイント(固定)を表示しています。出発地・目的地を入力すると同じ地図上にルートが表示されます。</p>
 
       <form id="route-form" class="route-form">
         <label for="origin">出発地</label>
@@ -52,21 +38,15 @@
         <button type="submit">ルートを表示</button>
       </form>
 
-      <div class="map-frame route-map-frame" id="route-map-container" hidden>
-        <iframe
-          id="route-frame"
-          src=""
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          allowfullscreen
-        ></iframe>
+      <div class="map-frame" id="map-container">
+        <div id="map"></div>
       </div>
       <p id="route-error" class="route-error" hidden></p>
     </section>
   </main>
 
   <footer class="site-footer">
-    <p>地図データ: Google マイマップ / Google Maps Embed API</p>
+    <p>地図データ: Google マイマップ / Google Maps JavaScript API</p>
   </footer>
 
   <script src="js/site-config.js"></script>
