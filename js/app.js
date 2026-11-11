@@ -31,6 +31,9 @@
     map = new google.maps.Map(document.getElementById("map"), {
       center: FUNABASHI_CENTER,
       zoom: 13,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: true,
     });
 
     loadFloodPoints();
