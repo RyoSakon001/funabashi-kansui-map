@@ -82,7 +82,19 @@
         const address = row["住所"];
         const detailUrl = row["詳細図"];
         const position = { lat, lng };
-        const marker = new google.maps.Marker({ position, map, title: address });
+        const marker = new google.maps.Marker({
+          position,
+          map,
+          title: address,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 6,
+            fillColor: "#d93025",
+            fillOpacity: 0.9,
+            strokeColor: "#ffffff",
+            strokeWeight: 1.5,
+          },
+        });
 
         marker.addListener("click", () => {
           const detailLink = detailUrl

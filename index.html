@@ -21,11 +21,15 @@
       <p class="panel-desc">登録済みの冠水ポイント(固定)を表示しています。出発地・目的地を入力すると同じ地図上にルートが表示されます。</p>
 
       <form id="route-form" class="route-form">
-        <label for="origin">出発地</label>
-        <gmp-place-autocomplete id="origin" placeholder="例: 船橋駅"></gmp-place-autocomplete>
+        <div class="field">
+          <label for="origin">出発地</label>
+          <gmp-place-autocomplete id="origin" placeholder="例: 船橋駅"></gmp-place-autocomplete>
+        </div>
 
-        <label for="destination">目的地</label>
-        <gmp-place-autocomplete id="destination" placeholder="例: 船橋市役所"></gmp-place-autocomplete>
+        <div class="field">
+          <label for="destination">目的地</label>
+          <gmp-place-autocomplete id="destination" placeholder="例: 船橋市役所"></gmp-place-autocomplete>
+        </div>
 
         <button type="submit">ルートを表示(車)</button>
       </form>
