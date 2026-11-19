@@ -30,7 +30,9 @@
         このサイトについて
       </button>
     </div>
-    <p class="lead">大雨時に冠水しやすいエリアを確認し、安全なルートを検討するための地図です。</p>
+    <p class="lead">大雨時に冠水しやすいエリアを確認し、安全なルートを検討するための地図です。
+      <a href="https://www.city.funabashi.lg.jp/bousai/map/p151391.html" target="_blank" rel="noopener">船橋市公表資料</a>
+    </p>
   </header>
 
   <div id="status-banner" class="status-banner" hidden></div>
@@ -62,6 +64,14 @@
             ルートを表示(車)
           </button>
         </form>
+
+        <div id="share-row" class="share-row" hidden>
+          <select id="danger-point-select" aria-label="共有する危険エリア"></select>
+          <button type="button" id="tweet-button" class="tweet-button">
+            <span class="x-mark" aria-hidden="true">𝕏</span>
+            で投稿
+          </button>
+        </div>
       </details>
 
       <div class="map-frame" id="map-container">
@@ -73,12 +83,8 @@
   </main>
 
   <footer class="site-footer">
-    <p>
-      冠水ポイントデータ:
-      <a href="https://www.city.funabashi.lg.jp/bousai/map/p151391.html" target="_blank" rel="noopener">船橋市公表資料</a>
-    </p>
     <p class="footer-credit">
-      作成: <a href="https://sakonryo.site/" target="_blank" rel="noopener">Ryo Sakon</a>
+      作成: Ryo Sakon
     </p>
   </footer>
 

@@ -39,6 +39,14 @@
   let routePolyline = null;
   let originMarker = null;
   let destinationMarker = null;
+  let floodPoints = [];
+
+  const shareRow = document.getElementById("share-row");
+  const dangerSelect = document.getElementById("danger-point-select");
+  const tweetButton = document.getElementById("tweet-button");
+
+  const NEAR_ROUTE_METERS = 150;
+  const SITE_HASHTAGS = "#船橋冠水マップ #令和8年8月千葉豪雨";
 
   window.initMap = function () {
     map = new google.maps.Map(document.getElementById("map"), {
@@ -95,12 +103,15 @@
           return;
         }
 
-        const name = `No.${row["番号"]}`;
+        const number = row["番号"];
+        const name = `No.${number}`;
         const address = row["住所"];
         const detailUrl = row["詳細図"];
         const photoUrl = row["写真"];
         const position = { lat, lng };
         const marker = new google.maps.Marker({ position, map, title: address });
+
+        floodPoints.push({ number, name, address, lat, lng, photoUrl });
 
         marker.addListener("click", () => {
           const photo = photoUrl
@@ -224,7 +235,52 @@
     }
 
     map.fitBounds(bounds);
+
+    return path;
   }
+
+  function findPointsNearPath(path) {
+    return floodPoints.filter((point) => {
+      const pointLatLng = new google.maps.LatLng(point.lat, point.lng);
+      return path.some(
+        (vertex) =>
+          google.maps.geometry.spherical.computeDistanceBetween(pointLatLng, vertex) <=
+          NEAR_ROUTE_METERS
+      );
+    });
+  }
+
+  function updateShareUI(matchedPoints) {
+    dangerSelect.innerHTML = "";
+
+    if (matchedPoints.length === 0) {
+      shareRow.hidden = true;
+      return;
+    }
+
+    matchedPoints.forEach((point) => {
+      const option = document.createElement("option");
+      option.value = point.number;
+      option.textContent = `${point.name} ${point.address}`;
+      dangerSelect.appendChild(option);
+    });
+
+    shareRow.hidden = false;
+  }
+
+  tweetButton.addEventListener("click", () => {
+    const point = floodPoints.find((p) => p.number === dangerSelect.value);
+    if (!point) {
+      return;
+    }
+
+    const shareUrl = new URL(`share/${point.number}.html`, document.baseURI).href;
+    const text = `ここが危険でした!\n${point.name} ${point.address}\n${SITE_HASHTAGS}`;
+    const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+      text
+    )}&url=${encodeURIComponent(shareUrl)}`;
+    window.open(intentUrl, "_blank", "noopener");
+  });
 
   routeForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -243,10 +299,12 @@
 
     try {
       const route = await computeRoute(origin, destination);
-      renderRoute(route);
+      const path = renderRoute(route);
+      updateShareUI(findPointsNearPath(path));
     } catch (err) {
       routeError.textContent = `ルートを取得できませんでした(${err.message})。地点名を見直してください。`;
       routeError.hidden = false;
+      shareRow.hidden = true;
     }
   });
 })();
